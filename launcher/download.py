@@ -1,5 +1,5 @@
 import urllib.request
-import globals as G
+import globalstorage as G
 import json
 import os
 

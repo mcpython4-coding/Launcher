@@ -1,4 +1,4 @@
-import globals as G
+import globalstorage as G
 import launcher.download
 import launcher.launch
 

@@ -1,6 +1,6 @@
 import os
 import launcher.download
-import globals as G
+import globalstorage as G
 import zipfile
 import shutil
 import sys
