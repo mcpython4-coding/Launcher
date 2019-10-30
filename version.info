@@ -4,4 +4,8 @@ These is the launcher for mcpython 4
 [uuk]: added launcher/download.py for downloading various files from index repo
 [uuk]: added launcher/launch.py for starting an given mcpython version
 [uuk]: to launch the latest version of the system, simply run __main__.py from command line
+[uuk]: removed base version and replaced it with an info file
+[uuk]: renamed globals to globalstorage to not block some editors for displaying globals content correct in downloaded
+       versions
+[uuk]: added launch argument send to sub-program
 

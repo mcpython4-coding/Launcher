@@ -1,6 +1,6 @@
 import os
 import launcher.download
-import globals as G
+import globalstorage as G
 import zipfile
 import shutil
 import sys
@@ -30,7 +30,7 @@ def modify(modifications, path):
             shutil.rmtree(path+"/"+moddata["path"])
 
 
-def launch_version(name: str, redownload=False, reextract=False):
+def launch_version(name: str, redownload=False, reextract=False, args=[]):
     if name in launcher.download.DATA:
         if "link" in launcher.download.DATA[name]:
             name = launcher.download.DATA[name]["link"]
@@ -43,5 +43,5 @@ def launch_version(name: str, redownload=False, reextract=False):
         modify(launcher.download.DATA[name]["modifications"], G.local+"/versions/version_{}".format(name))
     sys.path.append(G.local+"/versions/version_{}".format(name))
     subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                     G.local+"/versions/version_{}/{}".format(name, launcher.download.DATA[name]["main"])])
+                     G.local+"/versions/version_{}/{}".format(name, launcher.download.DATA[name]["main"])]+args)
 
