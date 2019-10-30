@@ -1,0 +1,7 @@
+These is the launcher for mcpython 4
+
+[uuk]: added requirements.txt
+[uuk]: added launcher/download.py for downloading various files from index repo
+[uuk]: added launcher/launch.py for starting an given mcpython version
+[uuk]: to launch the latest version of the system, simply run __main__.py from command line
+

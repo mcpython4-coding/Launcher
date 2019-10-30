@@ -1,0 +1,21 @@
+{
+  "original_latest": {
+    "url": "https://github.com/fogleman/Minecraft/archive/master.zip",
+    "stable": true,
+    "main": "main.py"
+  },
+  "active_latest": { "link": "19w44a" },
+  "active_stable": {
+    "url": null,
+    "stable": true,
+    "main": "__main__.py"
+  },
+  "19w44a": {
+    "url": "https://github.com/mcpython4-coding/core/archive/683286213b6f5579a0fc808a77df96f1fd406f2a.zip",
+    "stable": false,
+    "main": "__main__.py",
+    "modifications": [
+      {"mode": "remove", "path": "mods/TestMod"}
+    ]
+  }
+}
