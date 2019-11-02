@@ -8,4 +8,9 @@ These is the launcher for mcpython 4
 [uuk]: renamed globals to globalstorage to not block some editors for displaying globals content correct in downloaded
        versions
 [uuk]: added launch argument send to sub-program
+[uuk]: added cross-version mod folder
+[uuk]: fixed bug: versions without an modify-entry were not loadable
+[uuk]: added auto-install for requirements.txt file if not installed yet
+
+make some form for external assets files in index file which are downloaded and injected to an special folder
 

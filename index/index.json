@@ -2,16 +2,27 @@
   "original_latest": {
     "url": "https://github.com/fogleman/Minecraft/archive/master.zip",
     "stable": true,
-    "main": "main.py"
+    "main": "main.py",
+    "modifications": [
+      {"mode": "copy", "path": "{v}/texture.png", "to": "{home}/texture.png"}
+    ]
   },
-  "active_latest": { "link": "19w44a" },
+  "active_latest": { "link": "19w44b" },
   "active_stable": {
     "url": null,
     "stable": true,
     "main": "__main__.py"
   },
   "19w44a": {
-    "url": "https://github.com/mcpython4-coding/core/archive/683286213b6f5579a0fc808a77df96f1fd406f2a.zip",
+    "url": "https://github.com/mcpython4-coding/core/archive/f63551338539094c2199b19d1d6ffca962475caf.zip",
+    "stable": false,
+    "main": "__main__.py",
+    "modifications": [
+      {"mode": "remove", "path": "mods/TestMod"}
+    ]
+  },
+  "19w44b": {
+    "url": "https://github.com/mcpython4-coding/core/archive/91d6684dc0c77d1544016fc1ceb493aae6143885.zip",
     "stable": false,
     "main": "__main__.py",
     "modifications": [

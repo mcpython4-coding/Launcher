@@ -28,6 +28,8 @@ def modify(modifications, path):
     for moddata in modifications:
         if moddata["mode"] == "remove":
             shutil.rmtree(path+"/"+moddata["path"])
+        elif moddata["mode"] == "copy":
+            shutil.move(moddata["path"].format(v=path, home=G.local), moddata["to"].format(v=path, home=G.local))
 
 
 def launch_version(name: str, redownload=False, reextract=False, args=[]):
@@ -35,13 +37,18 @@ def launch_version(name: str, redownload=False, reextract=False, args=[]):
         if "link" in launcher.download.DATA[name]:
             name = launcher.download.DATA[name]["link"]
     launcher.download.download_index()
-    if not os.path.exists(G.local+"/versions/version_{}.zip".format(name)) or redownload:
+    home = G.local + "/versions/version_{}".format(name)
+    if not os.path.exists(home+".zip".format(name)) or redownload:
         launcher.download.download_by_name(name)
-    if not os.path.exists(G.local+"/versions/version_{}".format(name)) or redownload or reextract:
-        extract_version(G.local+"/versions/version_{}.zip".format(name),
-                        G.local+"/versions/version_{}".format(name))
-        modify(launcher.download.DATA[name]["modifications"], G.local+"/versions/version_{}".format(name))
+    if not os.path.exists(home) or redownload or reextract:
+        extract_version(home+".zip", home)
+        if "modifications" in launcher.download.DATA[name]:
+            modify(launcher.download.DATA[name]["modifications"], G.local+"/versions/version_{}".format(name))
+    if os.path.exists(home+"/requirements.txt"):
+        subprocess.call("py -{}.{} -m pip install -r {}".format(sys.version_info[0], sys.version_info[1],
+                                                                home+"/requirements.txt"))
     sys.path.append(G.local+"/versions/version_{}".format(name))
     subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                     G.local+"/versions/version_{}/{}".format(name, launcher.download.DATA[name]["main"])]+args)
+                     home+"/{}".format(launcher.download.DATA[name]["main"])]+
+                    ["--addmoddir {}".format(G.local+"/mods")]+args)
 
