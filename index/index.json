@@ -4,7 +4,8 @@
     "stable": true,
     "main": "main.py",
     "modifications": [
-      {"mode": "copy", "path": "{v}/texture.png", "to": "{home}/texture.png"}
+      {"mode": "copy", "path": "{v}/texture.png", "to": "{home}/texture.png"},
+      {"mode": "replace", "path": "{v}/main.py", "from": "time.clock()", "to": "time.time()"}
     ]
   },
   "active_latest": { "link": "19w44b" },

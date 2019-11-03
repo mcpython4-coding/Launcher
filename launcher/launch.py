@@ -26,10 +26,22 @@ def extract_version(file, output, delete_previous=True):
 
 def modify(modifications, path):
     for moddata in modifications:
-        if moddata["mode"] == "remove":
+        if "mode" not in moddata:
+            print("[ERROR] can't find 'mode' attribute of task {}".format(moddata))
+        elif moddata["mode"] == "remove":
             shutil.rmtree(path+"/"+moddata["path"])
         elif moddata["mode"] == "copy":
             shutil.move(moddata["path"].format(v=path, home=G.local), moddata["to"].format(v=path, home=G.local))
+        elif moddata["mode"] == "replace":
+            file = moddata["path"].format(v=path, home=G.local)
+            with open(file) as f:
+                data = f.read()
+            while moddata["from"] in data:
+                data = data.replace(moddata["from"], moddata["to"])
+            with open(file, mode="w") as f:
+                f.write(data)
+        else:
+            print("[WARNING] can't execute modification task {} with data {}".format(moddata["mode"], moddata))
 
 
 def launch_version(name: str, redownload=False, reextract=False, args=[]):

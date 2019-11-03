@@ -11,6 +11,8 @@ These is the launcher for mcpython 4
 [uuk]: added cross-version mod folder
 [uuk]: fixed bug: versions without an modify-entry were not loadable
 [uuk]: added auto-install for requirements.txt file if not installed yet
+[uuk]: made latest old version compatibly with python 3.8
+[uuk]: added some security system to index-file-based-modifications
 
 make some form for external assets files in index file which are downloaded and injected to an special folder
 
