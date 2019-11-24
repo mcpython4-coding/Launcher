@@ -46,7 +46,7 @@ def modify(modifications, path):
 
 def launch_version(name: str, redownload=False, reextract=False, args=[]):
     if name in launcher.download.DATA:
-        if "link" in launcher.download.DATA[name]:
+        while "link" in launcher.download.DATA[name]:
             name = launcher.download.DATA[name]["link"]
     launcher.download.download_index()
     home = G.local + "/versions/version_{}".format(name)
