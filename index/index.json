@@ -1,4 +1,6 @@
 {
+  "INDEX VERSION": "1.0.1",
+  "OLD VERSION LINKS": {"1.0.0": "https://raw.githubusercontent.com/mcpython4-coding/Index/2b1ce2130cc439fabe15c527570727f3ac2e7551/core.json"},
   "original_latest": {
     "url": "https://github.com/fogleman/Minecraft/archive/master.zip",
     "stable": true,
@@ -8,23 +10,17 @@
       {"mode": "replace", "path": "{v}/main.py", "from": "time.clock()", "to": "time.time()"}
     ]
   },
-  "active_latest": { "link": "19w44b" },
-  "active_stable": {
-    "url": null,
-    "stable": true,
-    "main": "__main__.py"
-  },
-  "19w44a": {
-    "url": "https://github.com/mcpython4-coding/core/archive/f63551338539094c2199b19d1d6ffca962475caf.zip",
+  "active_latest": {
+    "url": "https://github.com/mcpython4-coding/core/archive/dev.zip",
     "stable": false,
     "main": "__main__.py",
     "modifications": [
       {"mode": "remove", "path": "mods/TestMod"}
     ]
   },
-  "19w44b": {
-    "url": "https://github.com/mcpython4-coding/core/archive/91d6684dc0c77d1544016fc1ceb493aae6143885.zip",
-    "stable": false,
+  "active_stable": {
+    "url": "https://github.com/mcpython4-coding/core/archive/release.zip",
+    "stable": true,
     "main": "__main__.py",
     "modifications": [
       {"mode": "remove", "path": "mods/TestMod"}

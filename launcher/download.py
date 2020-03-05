@@ -5,7 +5,7 @@ import os
 
 DATA = None
 
-INDEX_VERSION = "1.0.0"
+INDEX_VERSION = "1.0.1"
 
 
 def download_index(url="https://raw.githubusercontent.com/mcpython4-coding/Index/master/core.json"):

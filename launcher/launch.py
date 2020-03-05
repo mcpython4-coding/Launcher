@@ -29,7 +29,10 @@ def modify(modifications, path):
         if "mode" not in moddata:
             print("[ERROR] can't find 'mode' attribute of task {}".format(moddata))
         elif moddata["mode"] == "remove":
-            shutil.rmtree(path+"/"+moddata["path"])
+            try:
+                shutil.rmtree(path+"/"+moddata["path"])
+            except FileNotFoundError:
+                pass
         elif moddata["mode"] == "copy":
             shutil.move(moddata["path"].format(v=path, home=G.local), moddata["to"].format(v=path, home=G.local))
         elif moddata["mode"] == "replace":
