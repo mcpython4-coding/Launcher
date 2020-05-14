@@ -44,26 +44,23 @@ def modify(modifications, path):
             with open(file, mode="w") as f:
                 f.write(data)
         else:
-            print("[WARNING] can't execute modification task {} with data {}".format(moddata["mode"], moddata))
+            print("[WARNING] can't execute modification task '{}' with data '{}'".format(moddata["mode"], moddata))
 
 
-def launch_version(name: str, redownload=False, reextract=False, args=[]):
-    if name in launcher.download.DATA:
-        if "link" in launcher.download.DATA[name]:
-            name = launcher.download.DATA[name]["link"]
+def launch_version(group: str, id=0, redownload=False, reextract=False, args=[]):
     launcher.download.download_index()
-    home = G.local + "/versions/version_{}".format(name)
-    if not os.path.exists(home+".zip".format(name)) or redownload:
-        launcher.download.download_by_name(name)
+    home = G.local + "/versions/version_{}_{}".format(group, id)
+    if not os.path.exists(home+".zip") or redownload:
+        launcher.download.download_by_id(group, id)
     if not os.path.exists(home) or redownload or reextract:
         extract_version(home+".zip", home)
-        if "modifications" in launcher.download.DATA[name]:
-            modify(launcher.download.DATA[name]["modifications"], G.local+"/versions/version_{}".format(name))
+        if "modifications" in launcher.download.DATA["versions"][group][id]:
+            modify(launcher.download.DATA["versions"][group][id]["modifications"], home)
     if os.path.exists(home+"/requirements.txt"):
         subprocess.call("py -{}.{} -m pip install -r {}".format(sys.version_info[0], sys.version_info[1],
                                                                 home+"/requirements.txt"))
-    sys.path.append(G.local+"/versions/version_{}".format(name))
+    sys.path.append(home)
     subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                     home+"/{}".format(launcher.download.DATA[name]["main"])]+
+                     home+"/{}".format(launcher.download.DATA["versions"][group][id]["main"])] +
                     ["--addmoddir {}".format(G.local+"/mods")]+args)
 

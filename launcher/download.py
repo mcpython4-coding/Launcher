@@ -2,19 +2,30 @@ import urllib.request
 import globalstorage as G
 import json
 import os
+import sys
+import shutil
 
 DATA = None
 
-INDEX_VERSION = "1.0.1"
+INDEX_VERSION = "1.1.0"
 
 
 def download_index(url="https://raw.githubusercontent.com/mcpython4-coding/Index/master/core.json"):
-    response = urllib.request.urlopen(url)
-    data = response.read()
-    if os.path.exists(G.local+"/index/index.json"): os.remove(G.local+"/index/index.json")
-    with open(G.local+"/index/index.json", mode="wb") as f: f.write(data)
+    shutil.copy(G.local+"/index/index.json", G.local+"/index/index_backup.json")
+    download_file(url, G.local+"/index/index.json")
     global DATA
-    DATA = json.loads(data.decode("UTF-8"))
+    try:
+        with open(G.local + "/index/index.json") as f:
+            DATA = json.load(f)
+    except json.decoder.JSONDecodeError:
+        print("error during downloading index file. GIT system for your ip is overloaded, falling back to backup...")
+        shutil.copy(G.local+"/index/index_backup.json", G.local+"/index/index.json")
+        try:
+            with open(G.local + "/index/index.json") as f:
+                DATA = json.load(f)
+        except json.decoder.JSONDecodeError:
+            print("previous file was also invalid, exiting...")
+            sys.exit(-1)
     if "INDEX VERSION" not in DATA or DATA["INDEX VERSION"] != INDEX_VERSION:
         if "OLD VERSION LINKS" in DATA and INDEX_VERSION in DATA["OLD VERSION LINKS"]:
             url = DATA["OLD VERSION LINKS"][INDEX_VERSION]
@@ -23,12 +34,16 @@ def download_index(url="https://raw.githubusercontent.com/mcpython4-coding/Index
             raise ValueError("can't find readable index file for this version of the launcher")
 
 
-def download_by_name(name: str):
+def download_by_id(group: str, id: int):
     if DATA is None:
         download_index()
     print("downloading version...")
-    e = G.local+"/versions/version_{}.zip".format(name)
+    e = G.local+"/versions/version_{}_{}.zip".format(group, id)
     if os.path.exists(e): os.remove(e)
-    urllib.request.urlretrieve(DATA[name]["url"], e)
+    urllib.request.urlretrieve(DATA["versions"][group][id]["url"], e)
     print("finished!")
+
+
+def download_file(url, dest):
+    urllib.request.urlretrieve(url, dest)
 

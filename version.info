@@ -14,6 +14,11 @@ These is the launcher for mcpython 4
 [uuk]: made latest old version compatibly with python 3.8
 [uuk]: added some security system to index-file-based-modifications
 [uuk]: added check for index version
+[uuk]: updated launcher handler to latest version
 
-make some form for external assets files in index file which are downloaded and injected to an special folder
+todo: make some form for external assets files in index file which are downloaded and injected to an special folder
+todo: make GUI with mod selection, version selection, ...
+todo: add shared build-folder
+todo: add shared resourcepacks & datapacks folder
+todo: add global save folder
 
