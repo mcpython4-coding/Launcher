@@ -7,6 +7,30 @@
   "versions": {
     "dev_unstable": [
       {
+        "name": "dev:806e4365cc0533d00e875f407300eb4515c45ae6",
+        "url": "https://github.com/mcpython4-coding/core/archive/806e4365cc0533d00e875f407300eb4515c45ae6.zip",
+        "main": "__main__.py",
+        "change": "improved modding interface"
+      },
+      {
+        "name": "dev:191a7fda3962a0929e249c11c93abeb60dcf8314",
+        "url": "https://github.com/mcpython4-coding/core/archive/191a7fda3962a0929e249c11c93abeb60dcf8314.zip",
+        "main": "__main__.py",
+        "change": "updated some doc"
+      },
+      {
+        "name": "dev:fe1a959e48561533fe4693d5e0706400bf1fe384",
+        "url": "https://github.com/mcpython4-coding/core/archive/fe1a959e48561533fe4693d5e0706400bf1fe384.zip",
+        "main": "__main__.py",
+        "change": "improved Block.py doc"
+      },
+      {
+        "name": "dev:29990c8e4b718f6312439b5328be6068e1402f39",
+        "url": "https://github.com/mcpython4-coding/core/archive/29990c8e4b718f6312439b5328be6068e1402f39.zip",
+        "main": "__main__.py",
+        "change": "more progress"
+      },
+      {
         "name": "dev:2f39a75b149f7650183851b8d57a9abec9944f6c",
         "url": "https://github.com/mcpython4-coding/core/archive/2f39a75b149f7650183851b8d57a9abec9944f6c.zip",
         "main": "__main__.py",
