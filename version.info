@@ -15,6 +15,7 @@ These is the launcher for mcpython 4
 [uuk]: added some security system to index-file-based-modifications
 [uuk]: added check for index version
 [uuk]: updated launcher handler to latest version
+[uuk]: added Launcher-class for handling all the stuff
 
 todo: make some form for external assets files in index file which are downloaded and injected to an special folder
 todo: make GUI with mod selection, version selection, ...
