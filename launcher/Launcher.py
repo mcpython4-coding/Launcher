@@ -75,6 +75,22 @@ class Launcher:
         create_or_stay(G.local+"/home/cache_{}".format(version_name))
         create_or_stay(G.local+"/home/mods_{}".format(version_name))
         create_or_stay(G.local+"/home/saves")
+
+        flag = False
+        if os.path.exists(G.local+"/config.json"):
+            with open(G.local+"/config.json") as f:
+                data = json.load(f)
+            flag = "latest_version" in data and data["latest_version"] == version_name
+
+        if not flag:
+            print("installing requirements...")
+            subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
+                             folder+"/installer.py"], stderr=sys.stderr,
+                            stdout=sys.stdout)
+
+        with open(G.local+"/config.json", mode="w") as f:
+            json.dump({"latest_version": version_name}, f)
+
         subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
                          folder+"/__main__.py", "--home-folder", G.local+"/home/data_{}".format(version_name),
                          "--build-folder", G.local+"/home/cache_{}".format(version_name), "--addmoddir",
