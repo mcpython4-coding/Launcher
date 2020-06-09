@@ -16,11 +16,15 @@ These is the launcher for mcpython 4
 [uuk]: added check for index version
 [uuk]: updated launcher handler to latest version
 [uuk]: added Launcher-class for handling all the stuff
+[uuk]: added Profile-class and Version-class for handling those things
+[uuk]: made it possible to have multiple instances of one build
 
 todo: make some form for external assets files in index file which are downloaded and injected to an special folder
 todo: make GUI with mod selection, version selection, ...
-todo: add shared build-folder
-todo: add shared resourcepacks & datapacks folder
-todo: add global save folder
-todo: download libs to special folder & select them as needed
+todo: add shared ResourcePack folder [needs core-based console argument support]
+todo: add global save folder with config option to disable/enable
+todo: download libs to special folder & select them as needed [not install them when starting]
+todo: add an shared_mods-folder used for storing mods shared across profiles. Every profile should
+    be able to select certain mods to load. The system should be able to analyse the mods.json file to
+    show the user the mod parts loaded. This should enable loading individual mod parts or whole files.
 

@@ -38,57 +38,81 @@ def download_index(url="https://raw.githubusercontent.com/mcpython4-coding/Index
     return d
 
 
-class Launcher:
-    def __init__(self):
-        self.index = None
+class Profile:
+    @classmethod
+    def new(cls, path: str, version_path_or_instance, name: str):
+        if os.path.exists(path):
+            print("profile exists! would you like to override it? (y/n)")
+            a = input().lower()
+            if a == "y":
+                shutil.rmtree(path)
+            else:
+                sys.exit(-1)
+        if type(version_path_or_instance) == str:
+            version = Version.from_path(version_path_or_instance)
+        else:
+            version = version_path_or_instance
 
-        self.load_index()
+        profile_data = {"profile_name": name, "version_path": version.path, "dev": version.dev_env}
 
-        self.local_versions = []
+        version.download()
 
-        if os.path.exists(G.local + "/locals.json"):
-            with open(G.local + "/locals.json") as f:
-                data = json.load(f)
+        create_or_stay(path)
 
-            self.local_config = data["core_dev"]
+        with open(path + "/profile.json", mode="w") as f:
+            json.dump(profile_data, f)
 
-    def load_index(self):
-        self.index = download_index()
+        return cls(G.local+"/home/{}".format(name))
 
-    def download_version(self, version_name: str, path: str):
-        print("downloading...")
-        file = path+".zip"
-        if os.path.exists(path): return path
-        if not os.path.exists(file):
-            download_file("https://github.com/mcpython4-coding/Index/blob/master/builds/build_{}.zip?raw=true,".format(
-                version_name), file)
-        i = 1
-        with zipfile.ZipFile(file) as f:
-            names = f.namelist()
-            total = len(names)
-            for element in names:
-                print("\rextracting {}/{}: {}".format(i, total, element), end="")
-                r = os.path.join(path, element)
-                create_or_stay(os.path.dirname(r))
-                with open(r, mode="wb") as fw:
-                    fw.write(f.read(element))
-                i += 1
-        print("\nfinished!")
-        return path
+    @classmethod
+    def user_selects(cls):
+        profiles = os.listdir(G.local + "/home")
+        print("the following profiles were found: ")
+        [print("[{}]: {}".format(i + 1, e)) for i, e in enumerate(profiles)]
+        a = input("select profile: ")
+        try:
+            return Profile(G.local+"/home/"+profiles[int(a) - 1]) if a not in profiles else Profile(G.local+"/home/"+a)
+        except ValueError:
+            print("invalid answer!")
 
-    def launch_version(self, profile: str, version_name: str = None, *args):
-        print("LOADING VERSION {} OF MCPYTHON 4".format(version_name))
-        if version_name is None:
-            with open(G.local + "/home/{}/profile.json".format(profile)) as f:
-                d = json.load(f)
-                version_name = d["build"]
-                path = d["version_path"]
-        folder = self.download_version(version_name, path)
+    def __init__(self, path: str):
+        if not os.path.exists(path + "/profile.json"):
+            raise IOError("profile definition not found at '{}'!".format(path))
 
-        DATA = G.local + "/home/{}/data".format(profile)
-        CACHE = G.local + "/home/{}/cache".format(profile)
-        MODS = G.local + "/home/{}/mods".format(profile)
-        SAVES = G.local + "/home/{}/saves".format(profile)
+        with open(path + "/profile.json") as f:
+            data = json.load(f)
+
+        self.version: Version = Version.from_path(data["version_path"], dev_env=data["dev"])
+        self.name = data["profile_name"]
+        self.path: str = path
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.path == other.path
+        elif type(other) == str:
+            return self.path == other
+        else:
+            raise NotImplementedError()
+
+    def __hash__(self):
+        return hash((self.path, self.version))
+
+    def change_game_version(self, version):
+        with open(self.path + "/profile.json") as f:
+            data = json.load(f)
+        data["version_path"] = version.path
+        version.download()
+        with open(self.path + "/profile.json", mode="w") as f:
+            json.dump(data, f)
+
+    def launch(self, *args):
+        print("LOADING VERSION {} OF MCPYTHON 4".format(self.version.name))
+        self.version.download()
+
+        DATA = self.path + "/data"
+        CACHE = self.path + "/cache"
+        MODS = self.path + "/mods"
+        SAVES = self.path + "/saves"
 
         create_or_stay(DATA)
         create_or_stay(CACHE)
@@ -99,85 +123,168 @@ class Launcher:
         if os.path.exists(G.local + "/config.json"):
             with open(G.local + "/config.json") as f:
                 data = json.load(f)
-            flag = "latest_version" in data and data["latest_version"] == version_name
+            flag = "latest_version" in data and data["latest_version"] == self.version.name
 
         if not flag:
-            # todo: store requirements somewhere else &
+            # todo: store requirements somewhere else & link dynamically
             print("installing requirements...")
             subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                             folder + "/installer.py"], stderr=sys.stderr,
+                             self.version.path + "/installer.py"], stderr=sys.stderr,
                             stdout=sys.stdout)
 
+        if self.version.dev_env:
+            subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
+                             self.version.path + "/__main__.py", "--data-gen", "--exit-after-data-gen", "--no-window"],
+                            stderr=sys.stderr)
+
         with open(G.local + "/config.json", mode="w") as f:
-            json.dump({"latest_version": version_name}, f)
+            json.dump({"latest_version": self.version.name}, f)
 
         subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                         folder + "/__main__.py", "--home-folder", DATA, "--build-folder", CACHE, "--addmoddir", MODS,
-                         "--saves-directory", SAVES] + list(args))
+                         self.version.path + "/__main__.py", "--home-folder", DATA, "--build-folder", CACHE,
+                         "--addmoddir", MODS, "--saves-directory", SAVES] + list(args))
 
+
+class Version:
     @classmethod
-    def select_profile(cls):
-        profiles = os.listdir(G.local + "/home")
-        print("the following profiles were found: ")
-        [print("[{}]: {}".format(i + 1, e)) for i, e in enumerate(profiles)]
-        a = input("select profile: ")
-        return profiles[int(a)-1] if a not in profiles else a
-
-    def ask_user(self):
-        print("would you like to a) run an existing profile, b) create an new profile or c) edit the version"
-              "of an profile?")
-        a = input().lower().strip()
-        if a == "a":
-            self.launch_version(self.select_profile())
-        elif a == "b":
-            self.generate_new(input("name of the profile: "))
-        elif a == "c":
-            profile = self.select_profile()
-            if not os.path.exists(G.local + "/home/" + profile):
-                print("you have to first create the profile!")
-                return
-            path, build_name, version = self.ask_for_version()
-            create_or_stay(G.local + "/home/" + profile)
-            with open(G.local + "/home/" + profile + "/profile.json", mode="w") as f:
-                json.dump({"profile": profile, "version": version, "build": build_name, "version_path": path}, f)
-            self.download_version(build_name, path)
-            print("updated profile!")
-        else:
-            print("invalid input '{}'!".format(a))
-
-    def generate_new(self, profile_name: str):
-        if os.path.exists(G.local + "/home/" + profile_name):
-            print("profile exists! would you like to override it? (y/n)")
-            a = input().lower()
-            if a == "y":
-                shutil.rmtree(G.local + "/home/" + profile_name)
-            else:
-                sys.exit(-1)
-        path, build_name, version = self.ask_for_version()
-        create_or_stay(G.local + "/home/" + profile_name)
-        with open(G.local + "/home/" + profile_name + "/profile.json", mode="w") as f:
-            json.dump({"profile": profile_name, "version": version, "build": build_name, "version_path": path}, f)
-        self.download_version(build_name, path)
-
-    def ask_for_version(self):
+    def user_selects(cls):
         print("the following versions where found: ")
-        v = list(self.index["builds"].keys())
+        v = list(LAUNCHER.index["builds"].keys())
         v.sort()
-        for i, path in enumerate(self.local_config):
-            print("[{}]: local dev environment at {}".format(i+1, path))
+        for i, path in enumerate(LAUNCHER.local_config):
+            print("[{}]: local dev environment at {}".format(i + 1, path))
         for i, version in enumerate(v):
-            print("[{}]: {}".format(i + 1 + len(self.local_config), version))
+            print("[{}]: {}".format(i + 1 + len(LAUNCHER.local_config), version))
         i = int(input("select version number: ")) - 1
-        if i >= len(self.local_config):
-            i -= len(self.local_config)
+        if i >= len(LAUNCHER.local_config):
+            i -= len(LAUNCHER.local_config)
             version = v[i]
-            builds = self.index["builds"][version]
+            builds = LAUNCHER.index["builds"][version]
             builds.sort()
             print("the following builds were found: ")
             for i, build in enumerate(builds):
                 print("[{}] {}".format(i + 1, build))
-            return G.local + "/versions/" + builds[int(input("build number: ")) - 1], \
-                builds[int(input("build number: ")) - 1], version
+            i = int(input("build number: ")) - 1
+            name = builds[i]
+            version = cls.new(G.local+"/versions/{}".format(name), name)
+            return version
         else:
-            path = self.local_config[i]
-            return path, path, "dev_"+path.replace("/", "__").replace("\\", "__")
+            return Version(LAUNCHER.local_config[i], dev_env=True)
+
+    @classmethod
+    def new(cls, path: str, name: str):
+        if os.path.exists(path): return cls.from_path(path)
+        version_data = {"build": name}
+        create_or_stay(path)
+        with open(path+"/version_launcher.json", mode="w") as f:
+            json.dump(version_data, f)
+        return cls.from_path(path)
+
+    @classmethod
+    def from_path(cls, path: str, dev_env=False):
+        return cls(path, dev_env=dev_env)
+
+    def __init__(self, path: str, dev_env=False):
+        if not dev_env:
+            if not os.path.exists(path+"/version_launcher.json"):
+                raise IOError("version folder invalid!")
+            with open(path+"/version_launcher.json") as f:
+                data = json.load(f)
+            self.name = data["build"]
+        else:
+            self.name = path
+        self.path = path
+        self.dev_env = dev_env
+
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return self.name == other.name
+        elif type(other) == str:
+            return self.name == other
+        else:
+            raise NotImplementedError()
+
+    def __hash__(self):
+        return hash((self.name, self.path, self.dev_env))
+
+    def download(self):
+        if self.dev_env: return
+        file = self.path + ".zip"
+        if os.path.exists(file): return
+        print("downloading...")
+        if not os.path.exists(file):
+            download_file("https://github.com/mcpython4-coding/Index/blob/master/builds/build_{}.zip?raw=true,".format(
+                self.name), file)
+        i = 1
+        with zipfile.ZipFile(file) as f:
+            names = f.namelist()
+            total = len(names)
+            for element in names:
+                print("\rextracting {}/{}: {}".format(i, total, element), end="")
+                r = os.path.join(self.path, element)
+                create_or_stay(os.path.dirname(r))
+                with open(r, mode="wb") as fw:
+                    fw.write(f.read(element))
+                i += 1
+        print("\nfinished!")
+
+
+class Launcher:
+    def __init__(self):
+        global LAUNCHER
+        LAUNCHER = self
+
+        create_or_stay(G.local + "/shared_mods")
+
+        self.index = None
+
+        self.load_index()
+
+        self.local_versions = []
+        self.profiles = []
+        self.versions = []
+
+        if os.path.exists(G.local + "/locals.json"):
+            with open(G.local + "/locals.json") as f:
+                data = json.load(f)
+
+            self.local_config = data["core_dev"]
+
+    def load_index(self):
+        self.index = download_index()
+
+    def launch_profile(self, profile: Profile, *args):
+        profile.launch(*args)
+
+    def ask_user(self):
+        print("would you like to a) run an existing profile, b) create an new profile or c) edit profile"
+              "of an profile?")
+        a = input().lower().strip()
+        if a == "a":
+            self.launch_profile(Profile.user_selects())
+        elif a == "b":
+            name = input("profile name: ")
+            profile = Profile.new(G.local + "/home/{}".format(name), Version.user_selects(), name)
+            a = input("would you like to start the profile now? (y/n) ").lower().strip()
+            if a == "y":
+                self.launch_profile(profile)
+        elif a == "c":
+            profile = Profile.user_selects()
+            if profile is None:
+                print("you have to first create the profile before you can edit it")
+                return
+            while True:
+                print("would you like to a) edit the version of the game based on "
+                      "(any other to exit)")
+                a = input().lower().strip()
+                if a == "a":
+                    version = Version.user_selects()
+                    profile.change_game_version(version)
+                    print("updated profile!")
+                else:
+                    break
+        else:
+            print("invalid input '{}'!".format(a))
+
+
+LAUNCHER: Launcher = None
