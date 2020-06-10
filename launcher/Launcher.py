@@ -132,17 +132,16 @@ class Profile:
                              self.version.path + "/installer.py"], stderr=sys.stderr,
                             stdout=sys.stdout)
 
-        if self.version.dev_env:
-            subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
-                             self.version.path + "/__main__.py", "--data-gen", "--exit-after-data-gen", "--no-window"],
-                            stderr=sys.stderr)
-
         with open(G.local + "/config.json", mode="w") as f:
             json.dump({"latest_version": self.version.name}, f)
 
+        args = list(args)
+
+        if self.version.dev_env:
+            args = ["--data-gen"] + args
         subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
                          self.version.path + "/__main__.py", "--home-folder", DATA, "--build-folder", CACHE,
-                         "--addmoddir", MODS, "--saves-directory", SAVES] + list(args))
+                         "--addmoddir", MODS, "--saves-directory", SAVES] + args)
 
 
 class Version:
