@@ -207,6 +207,10 @@ class Version:
         return hash((self.name, self.path, self.dev_env))
 
     def download(self):
+        version_data = {"build": self.name}
+        create_or_stay(self.path)
+        with open(self.path + "/version_launcher.json", mode="w") as f:
+            json.dump(version_data, f)
         if self.dev_env: return
         file = self.path + ".zip"
         if os.path.exists(file): return
@@ -273,13 +277,22 @@ class Launcher:
                 print("you have to first create the profile before you can edit it")
                 return
             while True:
-                print("would you like to a) edit the version of the game based on "
+                print("would you like to a) edit the version of the game based on b) re-download version "
                       "(any other to exit)")
                 a = input().lower().strip()
                 if a == "a":
                     version = Version.user_selects()
                     profile.change_game_version(version)
                     print("updated profile!")
+                elif a == "b":
+                    if profile.version.dev_env:
+                        print("dev-profiles can not be re-downloaded!")
+                        continue
+                    print("removing old data...")
+                    shutil.rmtree(profile.version.path)
+                    os.remove(profile.version.path+".zip")
+                    print("finished!")
+                    profile.version.download()
                 else:
                     break
         else:
