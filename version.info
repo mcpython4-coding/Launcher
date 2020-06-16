@@ -18,6 +18,8 @@ These is the launcher for mcpython 4
 [uuk]: added Launcher-class for handling all the stuff
 [uuk]: added Profile-class and Version-class for handling those things
 [uuk]: made it possible to have multiple instances of one build
+[uuk]: added "--launch-profile" console argument for launching an specific profile without asking the user to select
+[uuk]: added "console_args" entry to profiles for launching the game with an list of args
 
 todo: make some form for external assets files in index file which are downloaded and injected to an special folder
 todo: make GUI with mod selection, version selection, ...

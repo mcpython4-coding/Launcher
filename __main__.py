@@ -30,7 +30,11 @@ if __name__ == "__main__":
         shutil.rmtree(G.local+"/versions")
         sys.exit(-1)
     instance = launcher.Launcher.Launcher()
-    while True:
-        instance.ask_user()
+    if "--launch-profile" in sys.argv:
+        instance.launch_profile(launcher.Launcher.Profile(G.local+"/profiles/{}".format(
+            sys.argv[sys.argv.index("--launch-profile")+1])))
+    else:
+        while True:
+            instance.ask_user()
 
 

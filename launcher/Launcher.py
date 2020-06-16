@@ -53,7 +53,8 @@ class Profile:
         else:
             version = version_path_or_instance
 
-        profile_data = {"profile_name": name, "version_path": version.path, "dev": version.dev_env}
+        profile_data = {"profile_name": name, "version_path": version.path, "dev": version.dev_env,
+                        "console_args": []}
 
         version.download()
 
@@ -85,6 +86,7 @@ class Profile:
         self.version: Version = Version.from_path(data["version_path"], dev_env=data["dev"])
         self.name = data["profile_name"]
         self.path: str = path
+        self.runtime_args = data["console_args"] if "console_args" in data else []
 
     def __eq__(self, other):
         if type(self) == type(other):
@@ -141,7 +143,7 @@ class Profile:
             args = ["--data-gen"] + args
         subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
                          self.version.path + "/__main__.py", "--home-folder", DATA, "--build-folder", CACHE,
-                         "--addmoddir", MODS, "--saves-directory", SAVES] + args)
+                         "--addmoddir", MODS, "--saves-directory", SAVES] + args + self.runtime_args)
 
 
 class Version:
