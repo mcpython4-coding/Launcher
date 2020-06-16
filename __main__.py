@@ -31,8 +31,8 @@ if __name__ == "__main__":
         sys.exit(-1)
     instance = launcher.Launcher.Launcher()
     if "--launch-profile" in sys.argv:
-        instance.launch_profile(launcher.Launcher.Profile(G.local+"/profiles/{}".format(
-            sys.argv[sys.argv.index("--launch-profile")+1])))
+        instance.launch_profile(launcher.Launcher.Profile(G.local+"/home/{}".format(
+            sys.argv[sys.argv.index("--launch-profile")+1])), *sys.argv[sys.argv.index("--launch-profile")+2:])
     else:
         while True:
             instance.ask_user()
