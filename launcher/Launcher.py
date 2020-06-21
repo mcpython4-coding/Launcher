@@ -243,8 +243,6 @@ class Launcher:
 
         self.index = None
 
-        self.load_index()
-
         self.local_versions = []
         self.profiles = []
         self.versions = []
