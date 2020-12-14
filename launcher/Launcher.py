@@ -169,7 +169,7 @@ class Profile:
             args = ["--data-gen"] + args
         subprocess.call(["py", "-{}.{}".format(sys.version_info[0], sys.version_info[1]),
                          self.version.path + "/__main__.py", "--home-folder", DATA, "--build-folder", CACHE,
-                         "--addmoddir", MODS, "--saves-directory", SAVES] + args + self.runtime_args)
+                         "--add-mod-dir", MODS, "--saves-directory", SAVES] + args + self.runtime_args)
 
 
 class Version:
