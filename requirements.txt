@@ -1,10 +1,10 @@
 pygithub==1.54
-pyglet==1.5.11
+pyglet==1.5.13
 Pillow==8.0.1
 deprecation==2.1.0
 toml==0.10.2
 clipboard==0.0.4
-requests==2.25.0
+requests==2.25.1
 psutil==5.7.3
 opensimplex==0.3
 simplejson==3.17.2
