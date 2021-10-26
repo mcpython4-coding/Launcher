@@ -1,6 +1,6 @@
 pygithub==1.54
 pyglet==1.5.13
-Pillow==8.0.1
+Pillow==8.3.2
 deprecation==2.1.0
 toml==0.10.2
 clipboard==0.0.4
